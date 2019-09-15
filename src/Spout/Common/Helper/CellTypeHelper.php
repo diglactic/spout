@@ -65,4 +65,17 @@ class CellTypeHelper
             $value instanceof \DateInterval
         );
     }
+
+    /**
+     * Returns whether the given value is an Excel hyperlink formula
+     *
+     * @param $value
+     * @param $matches (optional)
+     * @return bool Whether the given value is a hyperlink
+     */
+    public static function isFormulaExcelHyperlink($value, &$matches = null)
+    {
+        // currently only matches hyperlink formula with second optional parameter
+        return preg_match('/=HYPERLINK\("(.*)", "(.*)"\)/', $value, $matches) === 1;
+    }
 }

@@ -27,6 +27,11 @@ class Cell
     const TYPE_FORMULA = 2;
 
     /**
+     * Excel formula cell type
+     */
+    const TYPE_FORMULA_EXCEL_HYPERLINK = 2.1;
+
+    /**
      * Empty cell type
      */
     const TYPE_EMPTY = 3;
@@ -88,7 +93,7 @@ class Cell
      */
     public function getValue()
     {
-        return !$this->isError() ? $this->value : null;
+        return ! $this->isError() ? $this->value : null;
     }
 
     /**
@@ -143,6 +148,9 @@ class Cell
         if (CellTypeHelper::isDateTimeOrDateInterval($value)) {
             return self::TYPE_DATE;
         }
+        if (CellTypeHelper::isFormulaExcelHyperlink($value)) {
+            return self::TYPE_FORMULA_EXCEL_HYPERLINK;
+        }
         if (CellTypeHelper::isNonEmptyString($value)) {
             return self::TYPE_STRING;
         }
@@ -193,6 +201,14 @@ class Cell
     /**
      * @return bool
      */
+    public function isFormulaExcelHyperlink()
+    {
+        return $this->type === self::TYPE_FORMULA_EXCEL_HYPERLINK;
+    }
+
+    /**
+     * @return bool
+     */
     public function isError()
     {
         return $this->type === self::TYPE_ERROR;
@@ -203,6 +219,6 @@ class Cell
      */
     public function __toString()
     {
-        return (string) $this->getValue();
+        return (string)$this->getValue();
     }
 }

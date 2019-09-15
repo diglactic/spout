@@ -7,6 +7,7 @@ use Box\Spout\Common\Entity\Row;
 use Box\Spout\Common\Entity\Style\Style;
 use Box\Spout\Common\Exception\InvalidArgumentException;
 use Box\Spout\Common\Exception\IOException;
+use Box\Spout\Common\Helper\CellTypeHelper;
 use Box\Spout\Common\Helper\Escaper\XLSX as XLSXEscaper;
 use Box\Spout\Common\Helper\StringHelper;
 use Box\Spout\Common\Manager\OptionsManagerInterface;
@@ -83,7 +84,8 @@ EOD;
         XLSXEscaper $stringsEscaper,
         StringHelper $stringHelper,
         InternalEntityFactory $entityFactory
-    ) {
+    )
+    {
         $this->shouldUseInlineStrings = $optionsManager->getOption(Options::SHOULD_USE_INLINE_STRINGS);
         $this->rowManager = $rowManager;
         $this->styleManager = $styleManager;
@@ -120,12 +122,12 @@ EOD;
      * Checks if the sheet has been sucessfully created. Throws an exception if not.
      *
      * @param bool|resource $sheetFilePointer Pointer to the sheet data file or FALSE if unable to open the file
-     * @throws IOException If the sheet data file cannot be opened for writing
      * @return void
+     * @throws IOException If the sheet data file cannot be opened for writing
      */
     private function throwIfSheetFilePointerIsNotAvailable($sheetFilePointer)
     {
-        if (!$sheetFilePointer) {
+        if (! $sheetFilePointer) {
             throw new IOException('Unable to open sheet for writing.');
         }
     }
@@ -135,7 +137,7 @@ EOD;
      */
     public function addRow(Worksheet $worksheet, Row $row)
     {
-        if (!$this->rowManager->isEmpty($row)) {
+        if (! $this->rowManager->isEmpty($row)) {
             $this->addNonEmptyRow($worksheet, $row);
         }
 
@@ -147,9 +149,9 @@ EOD;
      *
      * @param Worksheet $worksheet The worksheet to add the row to
      * @param Row $row The row to be written
-     * @throws IOException If the data cannot be written
-     * @throws InvalidArgumentException If a cell value's type is not supported
      * @return void
+     * @throws InvalidArgumentException If a cell value's type is not supported
+     * @throws IOException If the data cannot be written
      */
     private function addNonEmptyRow(Worksheet $worksheet, Row $row)
     {
@@ -181,8 +183,8 @@ EOD;
      * @param Style $rowStyle
      * @param int $rowIndex
      * @param int $cellIndex
-     * @throws InvalidArgumentException If the given value cannot be processed
      * @return string
+     * @throws InvalidArgumentException If the given value cannot be processed
      */
     private function applyStyleAndGetCellXML(Cell $cell, Style $rowStyle, $rowIndex, $cellIndex)
     {
@@ -203,8 +205,8 @@ EOD;
      * @param int $cellNumber
      * @param Cell $cell
      * @param int $styleId
-     * @throws InvalidArgumentException If the given value cannot be processed
      * @return string
+     * @throws InvalidArgumentException If the given value cannot be processed
      */
     private function getCellXML($rowIndex, $cellNumber, Cell $cell, $styleId)
     {
@@ -215,9 +217,17 @@ EOD;
         if ($cell->isString()) {
             $cellXML .= $this->getCellXMLFragmentForNonEmptyString($cell->getValue());
         } elseif ($cell->isBoolean()) {
-            $cellXML .= ' t="b"><v>' . (int) ($cell->getValue()) . '</v></c>';
+            $cellXML .= ' t="b"><v>' . (int)($cell->getValue()) . '</v></c>';
         } elseif ($cell->isNumeric()) {
             $cellXML .= '><v>' . $cell->getValue() . '</v></c>';
+        } elseif ($cell->isFormulaExcelHyperlink()) {
+            CellTypeHelper::isFormulaExcelHyperlink($cell->getValue(), $matches);
+            $hyperlink = $this->stringsEscaper->escape($matches[1]);
+            $label = $this->stringsEscaper->escape($matches[2]);
+            $formula = 'HYPERLINK("' . $hyperlink . '", "' . $label . '")';
+            // store value as formula so when reading and writing is mixed,
+            // the text formula will be converted to an actual formula
+            $cellXML .= ' t="str"><f>' . $formula . '</f><v>=' . $formula . '</v></c>';
         } elseif ($cell->isEmpty()) {
             if ($this->styleManager->shouldApplyStyleOnEmptyCell($styleId)) {
                 $cellXML .= '/>';
@@ -237,8 +247,8 @@ EOD;
      * Returns the XML fragment for a cell containing a non empty string
      *
      * @param string $cellValue The cell value
-     * @throws InvalidArgumentException If the string exceeds the maximum number of characters allowed per cell
      * @return string The XML fragment representing the cell
+     * @throws InvalidArgumentException If the string exceeds the maximum number of characters allowed per cell
      */
     private function getCellXMLFragmentForNonEmptyString($cellValue)
     {
@@ -263,7 +273,7 @@ EOD;
     {
         $worksheetFilePointer = $worksheet->getFilePointer();
 
-        if (!is_resource($worksheetFilePointer)) {
+        if (! is_resource($worksheetFilePointer)) {
             return;
         }
 
