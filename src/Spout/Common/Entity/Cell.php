@@ -93,7 +93,7 @@ class Cell
      */
     public function getValue()
     {
-        return ! $this->isError() ? $this->value : null;
+        return !$this->isError() ? $this->value : null;
     }
 
     /**
