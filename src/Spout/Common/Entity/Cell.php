@@ -219,6 +219,6 @@ class Cell
      */
     public function __toString()
     {
-        return (string)$this->getValue();
+        return (string) $this->getValue();
     }
 }

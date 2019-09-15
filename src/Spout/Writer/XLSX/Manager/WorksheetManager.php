@@ -84,8 +84,7 @@ EOD;
         XLSXEscaper $stringsEscaper,
         StringHelper $stringHelper,
         InternalEntityFactory $entityFactory
-    )
-    {
+    ) {
         $this->shouldUseInlineStrings = $optionsManager->getOption(Options::SHOULD_USE_INLINE_STRINGS);
         $this->rowManager = $rowManager;
         $this->styleManager = $styleManager;
@@ -122,12 +121,12 @@ EOD;
      * Checks if the sheet has been sucessfully created. Throws an exception if not.
      *
      * @param bool|resource $sheetFilePointer Pointer to the sheet data file or FALSE if unable to open the file
-     * @return void
      * @throws IOException If the sheet data file cannot be opened for writing
+     * @return void
      */
     private function throwIfSheetFilePointerIsNotAvailable($sheetFilePointer)
     {
-        if (! $sheetFilePointer) {
+        if (!$sheetFilePointer) {
             throw new IOException('Unable to open sheet for writing.');
         }
     }
@@ -137,7 +136,7 @@ EOD;
      */
     public function addRow(Worksheet $worksheet, Row $row)
     {
-        if (! $this->rowManager->isEmpty($row)) {
+        if (!$this->rowManager->isEmpty($row)) {
             $this->addNonEmptyRow($worksheet, $row);
         }
 
@@ -149,9 +148,9 @@ EOD;
      *
      * @param Worksheet $worksheet The worksheet to add the row to
      * @param Row $row The row to be written
-     * @return void
-     * @throws InvalidArgumentException If a cell value's type is not supported
      * @throws IOException If the data cannot be written
+     * @throws InvalidArgumentException If a cell value's type is not supported
+     * @return void
      */
     private function addNonEmptyRow(Worksheet $worksheet, Row $row)
     {
@@ -183,8 +182,8 @@ EOD;
      * @param Style $rowStyle
      * @param int $rowIndex
      * @param int $cellIndex
-     * @return string
      * @throws InvalidArgumentException If the given value cannot be processed
+     * @return string
      */
     private function applyStyleAndGetCellXML(Cell $cell, Style $rowStyle, $rowIndex, $cellIndex)
     {
@@ -205,8 +204,8 @@ EOD;
      * @param int $cellNumber
      * @param Cell $cell
      * @param int $styleId
-     * @return string
      * @throws InvalidArgumentException If the given value cannot be processed
+     * @return string
      */
     private function getCellXML($rowIndex, $cellNumber, Cell $cell, $styleId)
     {
@@ -247,8 +246,8 @@ EOD;
      * Returns the XML fragment for a cell containing a non empty string
      *
      * @param string $cellValue The cell value
-     * @return string The XML fragment representing the cell
      * @throws InvalidArgumentException If the string exceeds the maximum number of characters allowed per cell
+     * @return string The XML fragment representing the cell
      */
     private function getCellXMLFragmentForNonEmptyString($cellValue)
     {
@@ -273,7 +272,7 @@ EOD;
     {
         $worksheetFilePointer = $worksheet->getFilePointer();
 
-        if (! is_resource($worksheetFilePointer)) {
+        if (!is_resource($worksheetFilePointer)) {
             return;
         }
 
