@@ -103,7 +103,7 @@ EOD;
      */
     protected function throwIfSheetFilePointerIsNotAvailable()
     {
-        if (!$this->sheetFilePointer) {
+        if (! $this->sheetFilePointer) {
             throw new IOException('Unable to open sheet for writing.');
         }
     }
@@ -145,7 +145,7 @@ EOD;
      */
     public function addRow($dataRow, $style)
     {
-        if (!$this->isEmptyRow($dataRow)) {
+        if (! $this->isEmptyRow($dataRow)) {
             $this->addNonEmptyRow($dataRow, $style);
         }
 
@@ -184,7 +184,7 @@ EOD;
 
         $rowXML = '<row r="' . $rowIndex . '" spans="1:' . $numCells . '">';
 
-        foreach($dataRow as $cellValue) {
+        foreach ($dataRow as $cellValue) {
             $rowXML .= $this->getCellXML($rowIndex, $cellNumber, $cellValue, $style->getId());
             $cellNumber++;
         }
@@ -214,7 +214,16 @@ EOD;
         $cellXML .= ' s="' . $styleId . '"';
 
         if (CellHelper::isNonEmptyString($cellValue)) {
-            $cellXML .= $this->getCellXMLFragmentForNonEmptyString($cellValue);
+            if (CellHelper::isHyperlink($cellValue, $matches)) {
+                $hyperlink = $this->stringsEscaper->escape($matches[1]);
+                $label = $this->stringsEscaper->escape($matches[2]);
+                $formula = 'HYPERLINK("' . $hyperlink . '", "' . $label . '")';
+                // store value as formula so when reading and writing is mixed,
+                // the text formula will be converted to an actual formula
+                $cellXML .= ' t="str"><f>' . $formula . '</f><v>=' . $formula . '</v></c>';
+            } else {
+                $cellXML .= $this->getCellXMLFragmentForNonEmptyString($cellValue);
+            }
         } else if (CellHelper::isBoolean($cellValue)) {
             $cellXML .= ' t="b"><v>' . intval($cellValue) . '</v></c>';
         } else if (CellHelper::isNumeric($cellValue)) {
@@ -264,7 +273,7 @@ EOD;
      */
     public function close()
     {
-        if (!is_resource($this->sheetFilePointer)) {
+        if (! is_resource($this->sheetFilePointer)) {
             return;
         }
 

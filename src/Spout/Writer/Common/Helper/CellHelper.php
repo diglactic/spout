@@ -27,7 +27,7 @@ class CellHelper
         $originalColumnIndex = $columnIndex;
 
         // Using isset here because it is way faster than array_key_exists...
-        if (!isset(self::$columnIndexToCellIndexCache[$originalColumnIndex])) {
+        if (! isset(self::$columnIndexToCellIndexCache[$originalColumnIndex])) {
             $cellIndex = '';
             $capitalAAsciiValue = ord('A');
 
@@ -87,5 +87,17 @@ class CellHelper
     public static function isBoolean($value)
     {
         return gettype($value) === 'boolean';
+    }
+
+    /**
+     * @param $value
+     * @param $matches (optional)
+     * @return bool Whether the given value is a hyperlink
+     */
+    public static function isHyperlink($value, &$matches = null)
+    {
+        // currently only matches hyperlink formula
+        // with second optional parameter
+        return preg_match('/\=HYPERLINK\("(.*)", "(.*)"\)/', $value, $matches) === 1;
     }
 }
