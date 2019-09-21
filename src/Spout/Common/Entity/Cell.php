@@ -97,11 +97,19 @@ class Cell
     }
 
     /**
-     * @param Style $style
+     * @param Style|null $style
      */
     public function setStyle($style)
     {
-        $this->style = $style ?: new Style();
+        $this->style = $style;
+    }
+
+    /**
+     * @return Style
+     */
+    public function getStyle()
+    {
+        return $this->style ?: new Style();
     }
 
     /**
@@ -110,14 +118,6 @@ class Cell
      * @return Style|null
      */
     public function getActualStyle()
-    {
-        return $this->style;
-    }
-
-    /**
-     * @return Style
-     */
-    public function getStyle()
     {
         return $this->style;
     }

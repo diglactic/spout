@@ -97,6 +97,14 @@ class Row
      */
     public function getStyle()
     {
+        return $this->style ?: new Style();
+    }
+
+    /**
+     * @return Style|null
+     */
+    public function getActualStyle()
+    {
         return $this->style;
     }
 
@@ -106,8 +114,7 @@ class Row
      */
     public function setStyle($style)
     {
-        $this->style = $style ?: new Style();
-
+        $this->style = $style;
         return $this;
     }
 
