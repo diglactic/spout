@@ -97,11 +97,21 @@ class Cell
     }
 
     /**
-     * @param Style|null $style
+     * @param Style $style
      */
     public function setStyle($style)
     {
         $this->style = $style ?: new Style();
+    }
+
+    /**
+     * Allows direct access to style property
+     *
+     * @return Style|null
+     */
+    public function getActualStyle()
+    {
+        return $this->style;
     }
 
     /**
